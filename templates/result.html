@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis Result - TalentMap</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="background-animation"></div>
+    <div class="container result-container">
+        
+        <header class="result-header">
+            <div>
+                <div class="logo small">
+                    <i class="fa-solid fa-map-location-dot"></i> TalentMap
+                </div>
+                <h1>Candidate <span class="highlight">Intelligence</span></h1>
+                <p class="subtitle text-left">AI-driven profile analysis complete.</p>
+            </div>
+            <a href="/" class="btn-secondary">
+                <i class="fa-solid fa-arrow-left"></i> Analyze Another
+            </a>
+        </header>
+
+        <div class="result-grid">
+            <!-- Left Column: Core Results -->
+            <div class="card result-card sticky-card">
+                <h3><i class="fa-solid fa-route gradient-icon"></i> Predicted Path</h3>
+                
+                <div class="stat-box">
+                    <span class="label"><i class="fa-solid fa-layer-group"></i> Career Field</span>
+                    <span class="value">{{ result.field }}</span>
+                </div>
+                
+                <div class="stat-box">
+                    <span class="label"><i class="fa-solid fa-user-tie"></i> Job Role</span>
+                    <span class="value">{{ result.role }}</span>
+                </div>
+                
+                <div class="circular-progress-container">
+                    <div class="circular-progress" data-score="{{ result.match_score }}">
+                        <div class="inner-circle">
+                            <span class="score-text">{{ result.match_score }}<span class="percent">%</span></span>
+                        </div>
+                    </div>
+                    <p class="match-label"><i class="fa-solid fa-bullseye success-text"></i> Job Match Score</p>
+                </div>
+            </div>
+
+            <!-- Right Column: Skills & Companies -->
+            <div class="card result-card">
+                <h3><i class="fa-solid fa-microchip gradient-icon"></i> Technical Analysis</h3>
+                
+                <div class="details-wrapper">
+                    
+                    <!-- Candidate Information -->
+                    <div class="details-section">
+                        <h4><i class="fa-solid fa-address-card blue-text"></i> Candidate Information</h4>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">Name</span>
+                                <span class="info-value">{{ result.candidate_info.name }}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Education</span>
+                                <span class="info-value">{{ result.candidate_info.education }}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Experience</span>
+                                <span class="info-value">{{ result.candidate_info.experience }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Skills Found -->
+                    <div class="details-section">
+                        <h4><i class="fa-solid fa-check-double success-text"></i> Extracted Skills</h4>
+                        <div class="tags">
+                            {% for skill in result.extracted_skills %}
+                                <span class="tag success">{{ skill }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Skill Gaps -->
+                    <div class="details-section">
+                        <h4><i class="fa-solid fa-triangle-exclamation danger-text"></i> Skill Gaps Identified</h4>
+                        <div class="tags">
+                            {% if result.missing_skills and result.missing_skills != ["None"] %}
+                                {% for skill in result.missing_skills %}
+                                    <span class="tag danger">{{ skill }}</span>
+                                {% endfor %}
+                            {% else %}
+                                <span class="tag success"><i class="fa-solid fa-shield-check"></i> Perfect Match - No Gaps</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Recommendations -->
+                    <div class="details-section">
+                        <h4><i class="fa-solid fa-graduation-cap warning-text"></i> Learning Recommendations</h4>
+                        {% if result.missing_skills and result.missing_skills != ["None"] %}
+                            <ul class="styled-list">
+                                {% for skill in result.missing_skills %}
+                                    <li>Focus on mastering <strong>{{ skill }}</strong> to increase your match score for {{ result.role }} roles.</li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p class="success-text font-medium"><i class="fa-solid fa-circle-check"></i> You are perfectly equipped for this role. Ready to apply!</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Companies -->
+                    <div class="details-section">
+                        <h4><i class="fa-solid fa-building purple-text"></i> Top Recommended Companies <span class="text-muted" style="font-size: 0.8rem; font-weight: 400;">(click to expand)</span></h4>
+                        <div class="company-accordion">
+                            {% for company in result.companies %}
+                                <div class="company-card" onclick="toggleCompany(this)">
+                                    <div class="company-header">
+                                        <div class="company-name-row">
+                                            <i class="fa-solid fa-building"></i>
+                                            <span class="company-name">{{ company.name }}</span>
+                                            <span class="tier-badge tier-{{ company.tier }}">{{ company.tier | capitalize }}</span>
+                                        </div>
+                                        <div class="company-toggle">
+                                            <span class="chance-preview">{{ company.selection_chance }}% chance</span>
+                                            <i class="fa-solid fa-chevron-down toggle-icon"></i>
+                                        </div>
+                                    </div>
+                                    <div class="company-details">
+                                        <p class="company-desc">{{ company.description }}</p>
+                                        <div class="chance-bar-container">
+                                            <div class="chance-label">
+                                                <span>Selection Chance</span>
+                                                <span class="chance-value {% if company.selection_chance >= 60 %}success-text{% elif company.selection_chance >= 35 %}warning-text{% else %}danger-text{% endif %}">{{ company.selection_chance }}%</span>
+                                            </div>
+                                            <div class="chance-bar">
+                                                <div class="chance-fill {% if company.selection_chance >= 60 %}fill-green{% elif company.selection_chance >= 35 %}fill-yellow{% else %}fill-red{% endif %}" style="width: {{ company.selection_chance }}%;"></div>
+                                            </div>
+                                        </div>
+                                        <a href="{{ company.career_url }}" target="_blank" class="career-link">
+                                            <i class="fa-solid fa-arrow-up-right-from-square"></i> View Careers at {{ company.name }}
+                                        </a>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 3rem; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+            <a href="/" class="btn-secondary" style="display: inline-flex; width: auto; padding: 1rem 2.5rem; font-size: 1.15rem;">
+                <i class="fa-solid fa-house" style="margin-right: 10px;"></i> Back to Home
+            </a>
+            <a href="/other_interests" class="btn-primary" style="display: inline-flex; width: auto; padding: 1rem 2.5rem; font-size: 1.15rem;">
+                <i class="fa-solid fa-compass" style="margin-right: 10px;"></i> Have other interests?
+            </a>
+        </div>
+    </div>
+
+    <style>
+        .company-accordion {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+        .company-card {
+            background: rgba(0,0,0,0.25);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 14px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .company-card:hover {
+            border-color: rgba(168, 85, 247, 0.3);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .company-card.active {
+            border-color: rgba(168, 85, 247, 0.4);
+            background: rgba(168, 85, 247, 0.05);
+        }
+        .company-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.4rem;
+        }
+        .company-name-row {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-weight: 600;
+            font-size: 1.05rem;
+        }
+        .company-name-row i { color: var(--purple-color); }
+        .company-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        .chance-preview {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        .toggle-icon {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            transition: transform 0.3s ease;
+        }
+        .company-card.active .toggle-icon {
+            transform: rotate(180deg);
+        }
+        .tier-badge {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 999px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .tier-elite { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .tier-high { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .tier-moderate { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+        .tier-accessible { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+
+        .company-details {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.4s ease;
+            padding: 0 1.4rem;
+        }
+        .company-card.active .company-details {
+            max-height: 400px;
+            padding: 0 1.4rem 1.4rem;
+        }
+        .company-desc {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.7;
+            margin-bottom: 1.2rem;
+            border-left: 3px solid var(--purple-color);
+            padding-left: 1rem;
+        }
+        .chance-bar-container { margin-bottom: 1rem; }
+        .chance-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            margin-bottom: 0.4rem;
+            color: var(--text-muted);
+        }
+        .chance-value { font-weight: 700; }
+        .chance-bar {
+            height: 8px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+        .chance-fill {
+            height: 100%;
+            border-radius: 999px;
+            transition: width 1s ease;
+        }
+        .fill-green { background: linear-gradient(90deg, #10b981, #34d399); }
+        .fill-yellow { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+        .fill-red { background: linear-gradient(90deg, #ef4444, #f87171); }
+        .career-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary-light);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            background: rgba(79, 70, 229, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(79, 70, 229, 0.2);
+            transition: all 0.2s;
+        }
+        .career-link:hover {
+            background: rgba(79, 70, 229, 0.2);
+            transform: translateX(3px);
+        }
+    </style>
+
+    <script>
+        function toggleCompany(card) {
+            // Close other open cards
+            document.querySelectorAll('.company-card.active').forEach(c => {
+                if (c !== card) c.classList.remove('active');
+            });
+            card.classList.toggle('active');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const progress = document.querySelector('.circular-progress');
+            const score = parseInt(progress.getAttribute('data-score'));
+            
+            // Animation for circular progress
+            let currentScore = 0;
+            const targetScore = score;
+            const duration = 1500; // ms
+            const interval = 20; // ms
+            const steps = duration / interval;
+            const stepValue = targetScore / steps;
+            
+            const timer = setInterval(() => {
+                currentScore += stepValue;
+                if(currentScore >= targetScore) {
+                    currentScore = targetScore;
+                    clearInterval(timer);
+                }
+                
+                const degrees = (currentScore / 100) * 360;
+                
+                let color1 = 'var(--secondary-color)';
+                let color2 = 'var(--primary-color)';
+                
+                if (targetScore < 40) {
+                    color1 = '#ef4444'; color2 = '#f87171';
+                } else if (targetScore < 70) {
+                    color1 = '#f59e0b'; color2 = '#fbbf24';
+                } else {
+                    color1 = '#10b981'; color2 = '#34d399';
+                }
+
+                progress.style.background = `conic-gradient(
+                    ${color1} 0deg, 
+                    ${color2} ${degrees}deg,
+                    rgba(255,255,255,0.05) ${degrees}deg
+                )`;
+            }, interval);
+        });
+    </script>
+</body>
+</html>

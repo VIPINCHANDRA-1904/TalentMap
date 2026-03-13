@@ -1,0 +1,736 @@
+================================================================================
+                    TALENTMAP - AI SKILL GAP & CAREER PREDICTION SYSTEM
+                                  PROJECT REPORT
+================================================================================
+
+
+================================================================================
+1. ABSTRACT
+================================================================================
+
+TalentMap is an AI-based web application designed to identify the skill gap
+between job requirements and candidate resumes. The system analyses uploaded
+resumes using Machine Learning and Natural Language Processing techniques to
+extract candidate skills, predict suitable career fields and job roles, detect
+skill gaps, compute a job match score, recommend top hiring companies with
+selection probability, and provide personalized learning recommendations.
+
+Additionally, TalentMap features an Interest-Based Learning module that allows
+users to explore alternative career paths. When a user enters a desired job
+field and role, the system performs live web searches across multiple sources to
+dynamically generate an accurate skill roadmap with curated links to free
+courses, YouTube tutorials, and official documentation.
+
+The system is built using Python (Flask), Scikit-learn, NLTK, and SQLite, and
+offers a modern, responsive dark-themed web interface with glassmorphism design
+elements, micro-animations, and interactive UI components.
+
+
+================================================================================
+2. INTRODUCTION
+================================================================================
+
+In today's rapidly evolving job market, candidates often struggle to understand
+which skills they need to develop for their desired roles. Similarly, recruiters
+face challenges in quickly assessing whether a candidate's qualifications match
+job requirements.
+
+TalentMap addresses both of these pain points by providing an automated,
+AI-driven platform that:
+
+  (a) Parses resumes to extract candidate information and technical skills.
+  (b) Predicts the most suitable career field and job role using a trained
+      Machine Learning model (Naive Bayes classifier with TF-IDF vectorization).
+  (c) Compares extracted skills against a predefined skill database for the
+      predicted role to identify skill gaps.
+  (d) Calculates a fair Job Match Score using a weighted scoring formula that
+      considers exact matches, partial matches, and base confidence.
+  (e) Recommends companies that hire for the predicted role, with detailed role
+      descriptions, competitive tier classification, and estimated selection
+      probability.
+  (f) Suggests learning recommendations for missing skills.
+  (g) Provides an Interest-Based Learning feature that uses live DuckDuckGo web
+      search to dynamically generate accurate skill roadmaps with curated
+      learning resources for any user-specified field and role.
+
+The entire system is packaged as a lightweight Flask web application with a
+modern, premium UI, making it accessible to students, job seekers, and career
+counselors alike.
+
+
+================================================================================
+3. EXISTING SYSTEMS
+================================================================================
+
+Several resume analysis and job matching tools exist in the market:
+
+3.1 Traditional ATS (Applicant Tracking Systems)
+    - Systems like Workday, Greenhouse, and Lever are used by companies to
+      filter resumes based on keyword matching.
+    - Limitations: Purely keyword-based; no skill gap analysis; no career
+      prediction; not accessible to individual job seekers.
+
+3.2 Online Resume Scanners (e.g., Jobscan, Skillsyncer)
+    - These tools compare resumes against specific job descriptions.
+    - Limitations: Require a job description to function; do not predict
+      suitable roles; no learning recommendations; most are paid services.
+
+3.3 Career Assessment Platforms (e.g., LinkedIn Skills Assessment)
+    - Provide skill quizzes and endorsements.
+    - Limitations: Quiz-based, not resume-based; do not analyze career fit
+      from existing skills; no personalized learning roadmaps.
+
+3.4 Limitations of Existing Systems
+    - No single system combines resume parsing, ML-based role prediction,
+      skill gap detection, company recommendation with selection probability,
+      and web-search-powered learning roadmaps.
+    - Most tools are designed for recruiters, not for job seekers seeking
+      self-improvement guidance.
+    - Existing systems do not allow users to explore alternative career paths
+      with dynamically generated, web-verified skill requirements.
+
+
+================================================================================
+4. PROPOSED SYSTEM
+================================================================================
+
+TalentMap is proposed as an all-in-one AI Career Intelligence Platform that
+combines the following modules into a single web application:
+
+4.1 Resume Upload & Parsing Module
+    - Accepts PDF and DOCX resume formats.
+    - Extracts plain text using pdfminer.six and python-docx.
+    - Uses regex-based heuristics to extract structured information:
+      candidate name, education, and experience.
+
+4.2 Skill Extraction Module
+    - Cleans and preprocesses resume text (lowercase, stopword removal).
+    - Matches extracted tokens against a comprehensive dictionary of 60+
+      technical skills spanning programming languages, web technologies,
+      databases, DevOps, cloud, ML/AI, and design.
+
+4.3 ML Role Prediction Module
+    - Uses a Multinomial Naive Bayes classifier trained on a curated dataset.
+    - Skills are vectorized using TF-IDF (Term Frequency-Inverse Document
+      Frequency) before being fed to the classifier.
+    - Predicts the most suitable job role (e.g., Data Analyst, Software
+      Engineer, Web Developer).
+
+4.4 Career Field Mapping Module
+    - Maps predicted roles to broader career fields (e.g., Data Analyst →
+      Data Science, Web Developer → Web Development).
+
+4.5 Skill Gap Detection Module
+    - Compares candidate skills against required skills for the predicted role.
+    - Uses both exact matching and partial/keyword overlap to avoid false gaps.
+
+4.6 Match Score Calculation Module
+    - Calculates a fair, ATS-inspired Job Match Score using the formula:
+      Score = Base_Confidence + ((Exact_Matches + 0.5 * Partial_Matches) /
+              Total_Required) * 70
+    - Base confidence rewards candidates for having any skills at all.
+    - Score is clamped between 20% and 95%.
+
+4.7 Company Recommendation Module
+    - Recommends top hiring companies for the predicted role.
+    - Each company includes: role-specific description, competitive tier
+      (Elite/High/Moderate/Accessible), estimated selection probability, and
+      a direct link to the company's careers page.
+    - Interactive accordion UI: click to expand company details.
+
+4.8 Interest-Based Learning Module
+    - Allows users to input any desired job field and role.
+    - Backend performs live web searches via DuckDuckGo (ddgs library):
+      * Queries multiple search phrases to aggregate skill requirements from
+        12+ web sources.
+      * Extracts relevant skills using a comprehensive keyword bank.
+      * Searches again for each skill to find real learning resources.
+    - Outputs a step-by-step learning roadmap with clickable links to courses,
+      YouTube tutorials, and official documentation.
+
+4.9 Database Storage Module
+    - Stores all analysis results in a local SQLite database.
+    - Tables: users, resume_analysis, job_roles.
+
+4.10 Web Interface
+     - Modern dark-themed UI with glassmorphism effects.
+     - Responsive design, drag-and-drop file upload, animated progress
+       indicators, and interactive company accordion cards.
+
+
+================================================================================
+5. ADVANTAGES
+================================================================================
+
+5.1 All-in-One Platform
+    - Combines resume parsing, role prediction, skill gap analysis, company
+      recommendations, and learning roadmaps in a single application.
+
+5.2 AI-Powered Accuracy
+    - Uses Machine Learning (Naive Bayes + TF-IDF) for role prediction rather
+      than simple keyword matching.
+
+5.3 Fair Match Scoring
+    - ATS-inspired scoring formula that considers partial matches and provides
+      encouraging (not demotivating) scores.
+
+5.4 Live Web Search Integration
+    - The Interest-Based Learning module searches the real internet to provide
+      up-to-date, verified skill requirements and learning resources.
+
+5.5 Company Intelligence
+    - Detailed company profiles with role descriptions, competitive tier
+      classification, and estimated selection probability.
+
+5.6 Free & Open Source
+    - Built entirely with free, open-source libraries. No API keys or paid
+      services required.
+
+5.7 Lightweight & Portable
+    - Runs as a local Flask server. No cloud deployment required. Works on
+      any machine with Python 3.10+.
+
+5.8 Modern, Premium UI
+    - Dark-themed glassmorphism design with micro-animations and interactive
+      elements, providing a professional user experience.
+
+5.9 Extensible Architecture
+    - Modular code structure makes it easy to add new roles, skills, companies,
+      or integrate more advanced NLP models in the future.
+
+
+================================================================================
+6. HARDWARE REQUIREMENTS
+================================================================================
+
+Minimum Requirements:
+  - Processor       : Intel Core i3 (or equivalent) / Any 64-bit processor
+  - RAM             : 4 GB (8 GB recommended)
+  - Storage         : 500 MB free disk space
+  - Display         : 1366 x 768 resolution or higher
+  - Network         : Internet connection (for Interest-Based Learning web search)
+
+Recommended Requirements:
+  - Processor       : Intel Core i5 / AMD Ryzen 5 or higher
+  - RAM             : 8 GB or more
+  - Storage         : 1 GB free disk space
+  - Display         : 1920 x 1080 (Full HD)
+  - Network         : Broadband internet connection
+
+
+================================================================================
+7. SOFTWARE REQUIREMENTS
+================================================================================
+
+  - Operating System     : Windows 10/11, macOS 12+, or Linux (Ubuntu 20.04+)
+  - Python               : Version 3.10 or higher
+  - pip                  : Python package manager (bundled with Python)
+  - Web Browser          : Google Chrome, Mozilla Firefox, or Microsoft Edge
+                           (latest version)
+
+  Python Libraries (installed via pip):
+  - Flask                : Web framework for routing and templating
+  - pandas               : Data manipulation and analysis
+  - scikit-learn         : Machine Learning (TfidfVectorizer, MultinomialNB)
+  - nltk                 : Natural Language Toolkit (stopwords, tokenization)
+  - spacy                : Advanced NLP library
+  - pdfminer.six         : PDF text extraction
+  - python-docx          : DOCX text extraction
+  - ddgs                 : DuckDuckGo web search API
+  - googlesearch-python  : Google search integration (supplementary)
+
+  Database:
+  - SQLite 3             : Embedded relational database (bundled with Python)
+
+
+================================================================================
+8. UML DIAGRAMS - LaTeX Code with PlantUML
+================================================================================
+
+Below is LaTeX code that uses the plantuml package to generate UML diagrams.
+To compile, you need a LaTeX distribution with the plantuml package and
+PlantUML installed (java -jar plantuml.jar).
+
+Add to your LaTeX preamble:
+  \usepackage{plantuml}
+
+------------------------------------------------------------------------
+8.1 SYSTEM ARCHITECTURE DIAGRAM
+------------------------------------------------------------------------
+
+\begin{plantuml}
+@startuml
+!theme cerulean-outline
+
+title TalentMap - System Architecture
+
+package "Frontend (Browser)" {
+  [index.html\nResume Upload Page]
+  [result.html\nCandidate Intelligence]
+  [other_interests.html\nInterest Input Form]
+  [interest_result.html\nLearning Roadmap]
+}
+
+package "Backend (Flask Server)" {
+  [app.py\nFlask Application\n& Route Controller]
+  [resume_parser.py\nText Extraction]
+  [skill_extractor.py\nSkill Detection]
+  [recommendation.py\nRole Mapping &\nCompany Profiles]
+  [web_search.py\nLive Web Search\n(DuckDuckGo)]
+}
+
+package "Machine Learning" {
+  [train_model.py\nModel Training]
+  [role_prediction_model.pkl\nTrained NB Classifier]
+}
+
+package "Data Layer" {
+  database SQLite [
+    talentmap.db
+    --
+    users
+    resume_analysis
+    job_roles
+  ]
+}
+
+package "External Services" {
+  cloud DuckDuckGo [
+    DuckDuckGo
+    Search API
+  ]
+}
+
+[index.html\nResume Upload Page] --> [app.py\nFlask Application\n& Route Controller] : POST /upload
+[app.py\nFlask Application\n& Route Controller] --> [resume_parser.py\nText Extraction]
+[app.py\nFlask Application\n& Route Controller] --> [skill_extractor.py\nSkill Detection]
+[app.py\nFlask Application\n& Route Controller] --> [role_prediction_model.pkl\nTrained NB Classifier]
+[app.py\nFlask Application\n& Route Controller] --> [recommendation.py\nRole Mapping &\nCompany Profiles]
+[app.py\nFlask Application\n& Route Controller] --> SQLite
+[app.py\nFlask Application\n& Route Controller] --> [result.html\nCandidate Intelligence]
+
+[other_interests.html\nInterest Input Form] --> [app.py\nFlask Application\n& Route Controller] : POST /other_interests
+[app.py\nFlask Application\n& Route Controller] --> [web_search.py\nLive Web Search\n(DuckDuckGo)]
+[web_search.py\nLive Web Search\n(DuckDuckGo)] --> DuckDuckGo
+[app.py\nFlask Application\n& Route Controller] --> [interest_result.html\nLearning Roadmap]
+
+[train_model.py\nModel Training] --> [role_prediction_model.pkl\nTrained NB Classifier]
+
+@enduml
+\end{plantuml}
+
+
+------------------------------------------------------------------------
+8.2 USE CASE DIAGRAM
+------------------------------------------------------------------------
+
+\begin{plantuml}
+@startuml
+!theme cerulean-outline
+
+title TalentMap - Use Case Diagram
+
+left to right direction
+
+actor "Job Seeker" as User
+actor "DuckDuckGo" as DDG
+
+rectangle TalentMap {
+  usecase "Upload Resume" as UC1
+  usecase "View Candidate Intelligence" as UC2
+  usecase "View Extracted Skills" as UC3
+  usecase "View Predicted Role & Field" as UC4
+  usecase "View Job Match Score" as UC5
+  usecase "View Skill Gaps" as UC6
+  usecase "View Learning Recommendations" as UC7
+  usecase "View Company Recommendations" as UC8
+  usecase "Expand Company Details" as UC9
+  usecase "Explore Other Interests" as UC10
+  usecase "Enter Desired Field & Role" as UC11
+  usecase "View Learning Roadmap" as UC12
+  usecase "Access Learning Resources" as UC13
+}
+
+User --> UC1
+UC1 --> UC2 : <<include>>
+UC2 --> UC3 : <<include>>
+UC2 --> UC4 : <<include>>
+UC2 --> UC5 : <<include>>
+UC2 --> UC6 : <<include>>
+UC2 --> UC7 : <<include>>
+UC2 --> UC8 : <<include>>
+UC8 --> UC9 : <<extend>>
+User --> UC10
+UC10 --> UC11 : <<include>>
+UC11 --> UC12 : <<include>>
+UC12 --> UC13 : <<extend>>
+UC12 ..> DDG : <<searches web>>
+
+@enduml
+\end{plantuml}
+
+
+------------------------------------------------------------------------
+8.3 SEQUENCE DIAGRAM
+------------------------------------------------------------------------
+
+\begin{plantuml}
+@startuml
+!theme cerulean-outline
+
+title TalentMap - Sequence Diagram (Resume Analysis Flow)
+
+actor User
+participant "Browser\n(Frontend)" as Browser
+participant "Flask App\n(app.py)" as Flask
+participant "Resume Parser\n(resume_parser.py)" as Parser
+participant "Skill Extractor\n(skill_extractor.py)" as Extractor
+participant "ML Model\n(model.pkl)" as Model
+participant "Recommendation\nEngine" as Recommender
+participant "SQLite\nDatabase" as DB
+
+User -> Browser : Upload resume file
+Browser -> Flask : POST /upload (multipart form)
+activate Flask
+
+Flask -> Parser : extract_text_from_resume(file)
+activate Parser
+Parser --> Flask : raw text
+deactivate Parser
+
+Flask -> Parser : extract_structured_info(text)
+activate Parser
+Parser --> Flask : {name, education, experience}
+deactivate Parser
+
+Flask -> Extractor : extract_skills(text)
+activate Extractor
+Extractor --> Flask : found_skills[]
+deactivate Extractor
+
+Flask -> Model : model.predict(skills_string)
+activate Model
+Model --> Flask : predicted_role
+deactivate Model
+
+Flask -> Recommender : map_role_to_career_field(role)
+Flask -> Recommender : get_required_skills(role)
+Flask -> Recommender : detect_skill_gap(found, required)
+Flask -> Recommender : calculate_match_score(found, required)
+Flask -> Recommender : recommend_companies_detailed(role, score)
+activate Recommender
+Recommender --> Flask : detailed_companies[]
+deactivate Recommender
+
+Flask -> DB : INSERT user + analysis results
+activate DB
+DB --> Flask : success
+deactivate DB
+
+Flask --> Browser : render result.html with data
+deactivate Flask
+Browser --> User : Display Candidate Intelligence
+
+@enduml
+\end{plantuml}
+
+
+------------------------------------------------------------------------
+8.4 ACTIVITY DIAGRAM
+------------------------------------------------------------------------
+
+\begin{plantuml}
+@startuml
+!theme cerulean-outline
+
+title TalentMap - Activity Diagram
+
+start
+
+:User opens TalentMap homepage;
+
+:User uploads resume (PDF/DOCX);
+
+:System extracts text from resume;
+
+:System cleans and preprocesses text;
+
+:System extracts skills using keyword matching;
+
+if (Skills found?) then (yes)
+  :Feed skills to ML classifier;
+  :Predict job role;
+else (no)
+  :Assign default role (Data Analyst);
+endif
+
+:Map role to career field;
+
+:Fetch required skills for predicted role;
+
+:Compare candidate skills vs required skills;
+
+:Calculate Job Match Score;
+
+:Detect missing skills (skill gaps);
+
+:Generate company recommendations with selection chance;
+
+:Store results in SQLite database;
+
+:Display Candidate Intelligence dashboard;
+
+if (User clicks "Have other interests?") then (yes)
+  :User enters desired field and role;
+  :System searches web via DuckDuckGo;
+  :Extract skills from web search results;
+  :Search web for learning resources per skill;
+  :Display Learning Roadmap with resource links;
+else (no)
+  :User reviews results or returns home;
+endif
+
+stop
+
+@enduml
+\end{plantuml}
+
+
+------------------------------------------------------------------------
+8.5 CLASS DIAGRAM
+------------------------------------------------------------------------
+
+\begin{plantuml}
+@startuml
+!theme cerulean-outline
+
+title TalentMap - Class Diagram
+
+class FlaskApp {
+  - secret_key : String
+  - UPLOAD_FOLDER : String
+  - DB_PATH : String
+  - model : Pipeline
+  --
+  + index() : Response
+  + upload() : Response
+  + other_interests() : Response
+  - init_db() : void
+}
+
+class ResumeParser {
+  + extract_text_from_pdf(path) : String
+  + extract_text_from_docx(path) : String
+  + extract_text_from_resume(path) : String
+  + extract_structured_info(text) : Dict
+}
+
+class SkillExtractor {
+  - skills_list : List[String]
+  - stop_words : Set[String]
+  --
+  + clean_text(text) : String
+  + extract_skills(text) : List[String]
+}
+
+class RecommendationEngine {
+  - company_db : Dict
+  - role_mapping : Dict
+  - required_skills_db : Dict
+  --
+  + map_role_to_career_field(role) : String
+  + recommend_companies(role) : List[String]
+  + recommend_companies_detailed(role, score) : List[Dict]
+  + get_required_skills(role) : List[String]
+  + get_learning_resources(skill) : List[Tuple]
+  + detect_skill_gap(candidate, required) : List[String]
+  + calculate_match_score(candidate, required) : int
+  - _calculate_selection_chance(score, tier) : int
+}
+
+class WebSearchEngine {
+  + search_skills_for_role(field, role) : List[String]
+  + search_resources_for_skill(skill, role) : List[Tuple]
+  - _extract_skills_from_text(text, role, field) : List[String]
+  - _fallback_skills(field, role) : List[String]
+}
+
+class MLModel {
+  - vectorizer : TfidfVectorizer
+  - classifier : MultinomialNB
+  --
+  + fit(skills, roles) : void
+  + predict(skills_string) : String
+}
+
+class Database {
+  - path : String
+  --
+  + create_tables() : void
+  + insert_user(name, filename) : int
+  + insert_analysis(user_id, data) : void
+}
+
+FlaskApp --> ResumeParser : uses
+FlaskApp --> SkillExtractor : uses
+FlaskApp --> RecommendationEngine : uses
+FlaskApp --> WebSearchEngine : uses
+FlaskApp --> MLModel : loads
+FlaskApp --> Database : stores data
+
+WebSearchEngine ..> "DuckDuckGo API" : searches
+
+@enduml
+\end{plantuml}
+
+
+------------------------------------------------------------------------
+8.6 DEPLOYMENT DIAGRAM
+------------------------------------------------------------------------
+
+\begin{plantuml}
+@startuml
+!theme cerulean-outline
+
+title TalentMap - Deployment Diagram
+
+node "User's Machine" {
+
+  node "Web Browser" {
+    artifact "index.html" as idx
+    artifact "result.html" as res
+    artifact "other_interests.html" as oi
+    artifact "interest_result.html" as ir
+  }
+
+  node "Flask Development Server\n(localhost:8080)" {
+    artifact "app.py" as app
+
+    node "Utils Package" {
+      artifact "resume_parser.py" as rp
+      artifact "skill_extractor.py" as se
+      artifact "recommendation.py" as rec
+      artifact "web_search.py" as ws
+    }
+
+    node "ML Models" {
+      artifact "role_prediction_model.pkl" as model
+    }
+
+    database "SQLite" {
+      storage "talentmap.db" as db
+    }
+  }
+
+  node "Python Virtual Environment" {
+    artifact "Flask" as fl
+    artifact "scikit-learn" as sk
+    artifact "nltk" as nl
+    artifact "pdfminer.six" as pdf
+    artifact "python-docx" as docx
+    artifact "ddgs" as ddgs
+  }
+}
+
+cloud "Internet" {
+  node "DuckDuckGo" as DDG
+}
+
+idx --> app : HTTP POST
+app --> rp
+app --> se
+app --> rec
+app --> model
+app --> db
+app --> ws
+ws --> DDG : HTTPS Search Queries
+app --> res : Renders
+app --> ir : Renders
+
+@enduml
+\end{plantuml}
+
+
+================================================================================
+9. CONCLUSION
+================================================================================
+
+TalentMap successfully demonstrates the application of Machine Learning and
+Natural Language Processing in solving real-world career guidance challenges.
+The system provides a comprehensive, end-to-end solution that bridges the gap
+between a candidate's current skillset and their desired career trajectory.
+
+Key Achievements:
+  1. Accurate resume parsing and skill extraction from PDF/DOCX files.
+  2. ML-powered job role prediction using Naive Bayes classification.
+  3. Fair and encouraging match score calculation inspired by real ATS systems.
+  4. Rich company recommendations with role descriptions and selection
+     probability estimates.
+  5. A novel Interest-Based Learning module that leverages live web search
+     to dynamically generate accurate, up-to-date skill roadmaps.
+  6. A modern, premium web interface with interactive UI elements.
+
+Future Enhancements:
+  - Integration with advanced LLMs (GPT, Gemini) for deeper resume analysis.
+  - Support for multiple languages and international job markets.
+  - User authentication and persistent profiles.
+  - Integration with job portals (LinkedIn, Naukri) for real-time job listings.
+  - More sophisticated ML models (XGBoost, BERT-based classifiers).
+  - Mobile application development (React Native / Flutter).
+
+TalentMap serves as a valuable tool for students, fresh graduates, and career
+changers who want data-driven guidance on their professional development
+journey.
+
+
+================================================================================
+10. REFERENCES
+================================================================================
+
+[1]  Scikit-learn Documentation - Machine Learning in Python
+     https://scikit-learn.org/stable/documentation.html
+
+[2]  Flask Documentation - Web Development with Python
+     https://flask.palletsprojects.com/
+
+[3]  NLTK Documentation - Natural Language Toolkit
+     https://www.nltk.org/
+
+[4]  spaCy Documentation - Industrial-Strength NLP
+     https://spacy.io/usage
+
+[5]  pdfminer.six - PDF Text Extraction
+     https://pdfminersix.readthedocs.io/
+
+[6]  python-docx - DOCX Document Processing
+     https://python-docx.readthedocs.io/
+
+[7]  DuckDuckGo Search (ddgs) - Python Web Search Library
+     https://pypi.org/project/ddgs/
+
+[8]  SQLite Documentation
+     https://www.sqlite.org/docs.html
+
+[9]  TF-IDF - Term Frequency-Inverse Document Frequency
+     Manning, C.D., Raghavan, P., & Schütze, H. (2008).
+     "Introduction to Information Retrieval." Cambridge University Press.
+
+[10] Multinomial Naive Bayes Classifier
+     McCallum, A., & Nigam, K. (1998). "A Comparison of Event Models for
+     Naive Bayes Text Classification." AAAI Workshop on Text Categorization.
+
+[11] Resume Parsing Techniques using NLP
+     Kopparapu, S. K. (2010). "Automatic Extraction of Usable Information
+     from Unstructured Resumes." IEEE International Conference.
+
+[12] Skill Gap Analysis in Employment
+     World Economic Forum (2023). "Future of Jobs Report."
+     https://www.weforum.org/publications/the-future-of-jobs-report-2023/
+
+[13] ATS (Applicant Tracking System) Working Principles
+     Jobscan Blog - "How ATS Systems Work"
+     https://www.jobscan.co/blog/applicant-tracking-systems/
+
+================================================================================
+                              END OF REPORT
+================================================================================

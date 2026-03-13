@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Roadmap - TalentMap</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .roadmap-container {
+            margin-top: 1rem;
+        }
+        .roadmap-item {
+            background: rgba(0,0,0,0.3);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--primary-light);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .roadmap-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            border-color: var(--secondary-light);
+        }
+        .roadmap-skill {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .resource-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+        .resource-list li a {
+            color: var(--text-muted);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.2rem;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            width: 100%;
+            transition: all 0.2s;
+            border: 1px solid rgba(255,255,255,0.02);
+        }
+        .resource-list li a:hover {
+            background: rgba(79, 70, 229, 0.15);
+            color: var(--primary-light);
+            border-color: rgba(79, 70, 229, 0.3);
+            transform: translateX(5px);
+        }
+    </style>
+</head>
+<body>
+    <div class="background-animation"></div>
+    <div class="container result-container">
+        
+        <header class="result-header">
+            <div>
+                <div class="logo small">
+                    <i class="fa-solid fa-graduation-cap"></i> Complete Roadmap
+                </div>
+                <h1>Path to <span class="highlight">{{ result.role }}</span></h1>
+                <p class="subtitle text-left">Here is exactly what you need to learn from scratch to reach your goal in {{ result.field }}.</p>
+            </div>
+            <a href="/other_interests" class="btn-secondary">
+                <i class="fa-solid fa-arrow-left"></i> Check Another Path
+            </a>
+        </header>
+
+        <div class="result-grid" style="grid-template-columns: 1fr;">
+            <!-- Roadmap Column -->
+            <div class="card result-card">
+                <h3><i class="fa-solid fa-map-location-dot gradient-icon"></i> Your Learning Journey</h3>
+                
+                <div class="details-wrapper">
+                    <div class="details-section">
+                        <h4><i class="fa-solid fa-layer-group purple-text"></i> Essential Skills Required</h4>
+                        
+                        <div class="roadmap-container">
+                            {% for item in result.learning_roadmap %}
+                                <div class="roadmap-item">
+                                    <div class="roadmap-skill">
+                                        <i class="fa-solid fa-circle-check success-text" style="font-size: 1rem;"></i> 
+                                        {{ item.skill }}
+                                    </div>
+                                    <p class="text-muted" style="margin-bottom: 1rem; font-size: 0.9rem;">Recommended Learning Platforms & Tutorials:</p>
+                                    <ul class="resource-list">
+                                        {% for resource_name, resource_url in item.resources %}
+                                            <li>
+                                                <a href="{{ resource_url }}" target="_blank">
+                                                    {% if 'youtube' in resource_url.lower() %}
+                                                        <i class="fa-brands fa-youtube" style="color: #ef4444;"></i>
+                                                    {% else %}
+                                                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                                    {% endif %}
+                                                    {{ resource_name }}
+                                                </a>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 3rem;">
+            <a href="/" class="btn-secondary" style="display: inline-flex; width: auto; padding: 1rem 2.5rem; font-size: 1.15rem;">
+                <i class="fa-solid fa-house" style="margin-right: 10px;"></i> Back to Home
+            </a>
+        </div>
+    </div>
+</body>
+</html>

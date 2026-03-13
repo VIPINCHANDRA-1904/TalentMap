@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Other Interests - TalentMap</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .input-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        }
+        .form-card {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="background-animation"></div>
+    <div class="container">
+        <header>
+            <div class="logo small">
+                <i class="fa-solid fa-map-location-dot"></i> TalentMap
+            </div>
+            <h1>Explore <span class="highlight">Other Paths</span></h1>
+            <p class="subtitle">Tell us what you're interested in, and we'll tell you what skills you need to learn to get there.</p>
+        </header>
+
+        <main class="upload-section">
+            <div class="card glass-effect form-card">
+                <h2><i class="fa-solid fa-compass primary-icon"></i> New Interest</h2>
+                <p class="text-muted" style="margin-bottom: 2rem;">Enter your desired field and role below.</p>
+                
+                <form action="/other_interests" method="POST" id="interestForm">
+                    <div class="input-group">
+                        <label for="field">Interested Job Field (e.g. Data Science, Web Dev)</label>
+                        <input type="text" id="field" name="field" required placeholder="e.g. Cyber Security">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="role">Interested Job Role (e.g. Data Analyst)</label>
+                        <input type="text" id="role" name="role" required placeholder="e.g. Penetration Tester">
+                    </div>
+                    
+                    <button type="submit" class="btn-primary" id="searchBtn" style="margin-top: 1rem;">
+                        <i class="fa-solid fa-magnifying-glass"></i> Search Web & Analyze
+                    </button>
+                    
+                    <div class="loader-container" id="loader" style="display: none;">
+                        <div class="spinner"></div>
+                        <p>Searching the web for accurate skills & resources...</p>
+                        <p class="text-muted" style="font-size: 0.85rem;">This may take a few seconds</p>
+                    </div>
+                    
+                    <a href="/" class="btn-secondary" style="margin-top: 1rem; width: 100%; justify-content: center;">
+                        <i class="fa-solid fa-house" style="margin-right: 8px;"></i> Back to Home
+                    </a>
+                </form>
+            </div>
+        </main>
+    </div>
+    
+    <script>
+        document.getElementById('interestForm').addEventListener('submit', function() {
+            document.getElementById('searchBtn').style.display = 'none';
+            document.getElementById('loader').style.display = 'flex';
+        });
+    </script>
+</body>
+</html>

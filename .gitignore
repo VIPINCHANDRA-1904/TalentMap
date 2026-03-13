@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+ENV/
+env/
+.env
+.venv
+
+# TalentMap Specific
+uploads/*
+!uploads/.gitkeep
+database/*.db
+models/*.pkl
+
+# Environment variables / Configs
+.env
+setup.ps1
+SETUP_INSTRUCTIONS.txt
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Caches
+F:/pip_cache/
+F:/nltk_data/
+F:/temp/
+pip_cache/
+nltk_data/
+temp/
